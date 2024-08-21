@@ -30,6 +30,7 @@ export class ProdutoService {
     const urlAtualizar = `${this.url}/${id}`;
     return this._httpClient.put<Produto[]>(urlAtualizar, produto);
   }
+  
   removerProduto(id: any): Observable<Produto[]> {
     const urlDeletar = `${this.url}/${id}`;
     return this._httpClient.delete<Produto[]>(urlDeletar);

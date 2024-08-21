@@ -1,5 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
+import { catchError, of, tap } from 'rxjs';
 import { LoginService } from 'src/app/login.service';
 import { Produto } from 'src/app/models/Produto.model';
 import { ProdutoService } from 'src/app/produto.service';
@@ -42,14 +43,16 @@ export class ListaProdutoComponent implements OnInit{
   }
 
   excluir(id: number){
-    this._produtoService.removerProduto(id).subscribe(
-      vaga => {
-        this.listarProdutos();
-      },
-      err => {console.log("Erro ao Excluir")}
-    );
-
-      this._router.navigate(["/restrito/lista"])
-  }
-
-}
+    this._produtoService.removerProduto(id).pipe(
+      tap(
+        vaga => {
+          this.listarProdutos();
+        }
+      ), 
+      catchError(err => {
+        alert("Erro ao excluir");
+        return of (null);
+      })).subscribe(()=>{
+        this._router.navigate(["/restrito/lista"])
+      }) 
+}}

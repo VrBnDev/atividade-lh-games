@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { catchError, of, tap } from 'rxjs';
 import { Produto } from 'src/app/models/Produto.model';
 import { ProdutoService } from 'src/app/produto.service';
 
@@ -37,12 +38,15 @@ export class AtualizaProdutoComponent implements OnInit{
     }
 
     atualizar(id: number){
-      this._produtoService.atualizarProduto(id,this.produto).subscribe(
-        produto => {this.produto = new Produto(0,"","","",0)},
-        err => {alert("Erro ao atualizar")}
-      );
-
-      this._router.navigate(["restrito/lista"]);
-    }
-  
-}
+      this._produtoService.atualizarProduto(id,this.produto).pipe(
+        tap (produto => {
+          this.produto = new Produto(0,"","","",0)
+        }),
+        catchError(err => {
+          alert('Erro ao atualizar');
+          return of (null);
+        })
+      ).subscribe(()=>{
+        this._router.navigate(["restrito/lista"]);
+      });
+    }}
